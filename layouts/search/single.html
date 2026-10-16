@@ -1,0 +1,170 @@
+{{ define "main" }}
+{{ $posts := where site.RegularPages "Section" "in" (slice "tech" "work" "life") }}
+<div class="container">
+  <header class="page-header">
+    <h1 class="page-title">搜索</h1>
+    <p class="page-desc">在全部 {{ len $posts }} 篇文章里查找关键词，支持标题、标签和正文。</p>
+  </header>
+
+  <div class="search-wrap">
+    <div class="search-box" id="search-box">
+      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+      <input id="search-input" type="search" placeholder="搜索标题、标签或正文…" autocomplete="off" spellcheck="false">
+      <button id="search-clear" class="search-clear" type="button" aria-label="清空搜索">×</button>
+    </div>
+    <p class="search-status" id="search-status"></p>
+  </div>
+
+  <div class="post-list" id="search-results"></div>
+</div>
+
+<script>
+(function () {
+  var INDEX_URL = {{ "index.json" | relURL }};
+  var box = document.getElementById("search-box");
+  var input = document.getElementById("search-input");
+  var clearBtn = document.getElementById("search-clear");
+  var statusEl = document.getElementById("search-status");
+  var resultsEl = document.getElementById("search-results");
+  if (!input) return;
+
+  var index = null;
+  var pending = false;
+
+  function load() {
+    if (index || pending) return Promise.resolve(index || []);
+    pending = true;
+    return fetch(INDEX_URL, { cache: "force-cache" })
+      .then(function (r) { return r.json(); })
+      .then(function (data) { index = data || []; pending = false; return index; })
+      .catch(function () {
+        pending = false;
+        statusEl.textContent = "索引加载失败，请刷新页面重试。";
+        return [];
+      });
+  }
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+    });
+  }
+
+  function reEscape(s) {
+    return s.replace(/[.*+?^$()|[\]\\]/g, "\\$&");
+  }
+
+  function highlight(text, terms) {
+    var out = esc(text);
+    terms.forEach(function (t) {
+      if (!t) return;
+      try {
+        out = out.replace(new RegExp("(" + reEscape(esc(t)) + ")", "gi"), "<mark>$1</mark>");
+      } catch (e) {}
+    });
+    return out;
+  }
+
+  function snippet(text, terms, len) {
+    text = text || "";
+    var lower = text.toLowerCase();
+    var pos = -1;
+    for (var i = 0; i < terms.length; i++) {
+      var p = lower.indexOf(terms[i]);
+      if (p !== -1 && (pos === -1 || p < pos)) pos = p;
+    }
+    if (pos === -1) return text.slice(0, len);
+    var start = Math.max(0, pos - Math.floor(len / 3));
+    return (start > 0 ? "…" : "") + text.slice(start, start + len) + (start + len < text.length ? "…" : "");
+  }
+
+  function run(q) {
+    var terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+    if (!terms.length) return [];
+    var hits = [];
+    index.forEach(function (p) {
+      var title = (p.title || "").toLowerCase();
+      var tags = (p.tags || []).join(" ").toLowerCase();
+      var section = (p.section || "").toLowerCase();
+      var summary = (p.summary || "").toLowerCase();
+      var content = (p.content || "").toLowerCase();
+      var score = 0;
+      var ok = terms.every(function (t) {
+        var s = 0;
+        if (title.indexOf(t) !== -1) s += 12;
+        if (tags.indexOf(t) !== -1) s += 6;
+        if (section.indexOf(t) !== -1) s += 4;
+        if (summary.indexOf(t) !== -1) s += 3;
+        if (content.indexOf(t) !== -1) s += 1;
+        score += s;
+        return s > 0;
+      });
+      if (ok) {
+        if (title.indexOf(terms[0]) === 0) score += 5;
+        hits.push({ page: p, score: score });
+      }
+    });
+    hits.sort(function (a, b) { return b.score - a.score; });
+    return hits;
+  }
+
+  function render(q) {
+    var terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+    if (!terms.length) {
+      statusEl.textContent = "";
+      resultsEl.innerHTML = "";
+      return;
+    }
+    var hits = run(q);
+    statusEl.textContent = hits.length
+      ? "找到 " + hits.length + " 篇相关文章"
+      : "没有找到相关文章，换个关键词试试";
+    resultsEl.innerHTML = hits.map(function (h) {
+      var p = h.page;
+      var tags = (p.tags || []).map(function (t) {
+        return '<span class="tag">' + esc(t) + "</span>";
+      }).join("");
+      return '<a class="post-card" href="' + esc(p.url) + '">' +
+        '<h3 class="post-card-title">' + highlight(p.title, terms) + "</h3>" +
+        '<p class="post-card-summary">' +
+          highlight(snippet(p.summary || p.content, terms, 110), terms) +
+        "</p>" +
+        '<div class="post-card-meta">' +
+          '<span class="tag-plain">' + esc(p.section) + "</span>" + tags +
+          '<span class="spacer"></span><time>' + esc(p.date) + "</time>" +
+        "</div></a>";
+    }).join("");
+  }
+
+  var timer;
+  function onInput() {
+    var q = input.value;
+    box.classList.toggle("has-value", !!q);
+    clearTimeout(timer);
+    timer = setTimeout(function () {
+      load().then(function () { render(q); });
+      var url = new URL(window.location.href);
+      if (q.trim()) url.searchParams.set("q", q);
+      else url.searchParams.delete("q");
+      history.replaceState(null, "", url.toString());
+    }, 120);
+  }
+
+  input.addEventListener("input", onInput);
+  clearBtn.addEventListener("click", function () {
+    input.value = "";
+    box.classList.remove("has-value");
+    input.focus();
+    onInput();
+  });
+
+  var initial = new URLSearchParams(window.location.search).get("q") || "";
+  if (initial) {
+    input.value = initial;
+    box.classList.add("has-value");
+    load().then(function () { render(initial); });
+  }
+  input.focus();
+})();
+</script>
+{{ end }}

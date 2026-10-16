@@ -1,0 +1,60 @@
+{{ define "main" }}
+{{ $hasToc := and (not .Params.hideToc) (gt (len .TableOfContents) 120) }}
+<div class="container">
+  <div class="post-layout{{ if $hasToc }} has-toc{{ end }}">
+
+    <article class="post">
+      <header class="post-header{{ if .Params.hideMeta }} no-meta{{ end }}">
+        {{ if not .Params.hideMeta }}
+        <div class="post-meta">
+          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "2006年01月02日" }}</time>
+          <span class="dot">·</span>
+          <span>{{ .ReadingTime }} 分钟阅读</span>
+          {{ with .CurrentSection }}
+            <span class="dot">·</span>
+            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          {{ end }}
+        </div>
+        {{ end }}
+
+        <h1 class="post-title">{{ .Title }}</h1>
+
+        {{ with .GetTerms "tags" }}
+        <div class="tag-list">
+          {{ range . }}<a class="tag" href="{{ .RelPermalink }}">{{ .LinkTitle }}</a>{{ end }}
+        </div>
+        {{ end }}
+      </header>
+
+      <div class="post-body">
+        {{ .Content }}
+      </div>
+
+      <nav class="post-nav">
+        {{ with .PrevInSection }}
+          <a href="{{ .RelPermalink }}">
+            <span class="label">← 上一篇</span>
+            <span class="title">{{ .Title }}</span>
+          </a>
+        {{ end }}
+        {{ with .NextInSection }}
+          <a class="next" href="{{ .RelPermalink }}">
+            <span class="label">下一篇 →</span>
+            <span class="title">{{ .Title }}</span>
+          </a>
+        {{ end }}
+      </nav>
+    </article>
+
+    {{ if $hasToc }}
+    <aside class="post-aside">
+      <div class="toc">
+        <p class="toc-title">目录</p>
+        {{ .TableOfContents }}
+      </div>
+    </aside>
+    {{ end }}
+
+  </div>
+</div>
+{{ end }}

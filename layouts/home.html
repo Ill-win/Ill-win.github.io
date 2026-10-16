@@ -1,0 +1,45 @@
+{{ define "main" }}
+<div class="container">
+
+  <section class="hero">
+    <h1 class="hero-title">{{ site.Title }}</h1>
+    <p class="hero-desc">{{ site.Params.intro }}</p>
+    <div class="hero-tags">
+      {{ range (slice "work" "life" "tech") }}
+        {{ with site.GetPage . }}
+          <a class="hero-tag" href="{{ .RelPermalink }}">{{ .Title }}</a>
+        {{ end }}
+      {{ end }}
+    </div>
+  </section>
+
+  <div class="section-cards">
+    {{ range (slice "work" "life" "tech") }}
+      {{ with site.GetPage . }}
+      <a class="section-card" href="{{ .RelPermalink }}">
+        <span class="section-card-name">{{ .Title }}</span>
+        <span class="section-card-desc">{{ .Description }}</span>
+      </a>
+      {{ end }}
+    {{ end }}
+  </div>
+
+  {{ $posts := (where site.RegularPages "Section" "in" (slice "tech" "work" "life")).ByDate.Reverse }}
+  {{ $pag := .Paginate $posts }}
+
+  <div class="section-head">
+    <h2>最新文章</h2>
+    <a class="more" href="{{ "tags/" | relURL }}">按标签浏览 →</a>
+  </div>
+
+  {{ if $pag.Pages }}
+  <div class="post-list">
+    {{ range $pag.Pages }}{{ partial "post-card.html" . }}{{ end }}
+  </div>
+  {{ partial "pagination.html" $pag }}
+  {{ else }}
+  <p class="empty">还没有文章，去 content/ 下新建一篇吧。</p>
+  {{ end }}
+
+</div>
+{{ end }}

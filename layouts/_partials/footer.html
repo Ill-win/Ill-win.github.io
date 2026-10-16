@@ -1,0 +1,10 @@
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span>© {{ site.Params.since }}–{{ now.Year }} {{ site.Params.author }} · 用 Hugo 构建</span>
+    <span class="footer-links">
+      {{ with site.Params.github }}<a href="{{ . }}" target="_blank" rel="noopener">GitHub</a>{{ end }}
+      {{ with site.Params.email }}<a href="mailto:{{ . }}">邮箱</a>{{ end }}
+      <a href="{{ "index.xml" | relURL }}">RSS</a>
+    </span>
+  </div>
+</footer>

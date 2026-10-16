@@ -1,0 +1,98 @@
+# ============================================================
+#  站点基础配置
+#  部署前请修改：baseURL、title、params 下的个人信息
+# ============================================================
+
+# 如果你把仓库命名为 <用户名>.github.io，这里就是：
+#   https://<用户名>.github.io/
+baseURL = "https://yourname.github.io/"
+title = "拾光集"
+locale = "zh-cn"
+defaultContentLanguage = "zh"
+hasCJKLanguage = true          # 中文分词 / 字数统计 / 阅读时长
+enableRobotsTXT = true
+enableEmoji = true
+
+# 分页：每页文章数
+[pagination]
+  pagerSize = 8
+
+# 生成文章摘要的长度
+summaryLength = 120
+
+# ============================================================
+#  输出格式
+#  home 额外生成 index.json，供站内搜索使用
+# ============================================================
+[outputs]
+  home = ["html", "rss", "json"]
+
+# ============================================================
+#  个人信息（改这里就能换掉全站的身份信息）
+# ============================================================
+[params]
+  author      = "Alex"
+  initials    = "AL"                                    # 头像占位字母
+  tagline     = "工作 · 生活 · 技术"                     # 首页副标题
+  description = "记录工作上踩过的坑、生活里值得留下的瞬间，以及一些技术笔记。"
+  since       = 2026
+  github      = "https://github.com/yourname"
+  email       = "you@example.com"
+
+  # 首页简介（支持 Markdown 语法之外的纯文本）
+  intro = "你好，我是 Alex。白天写代码，晚上写点别的。这里没有垂直领域，只有我真正想记下来的东西。"
+
+# ============================================================
+#  导航菜单
+# ============================================================
+[menu]
+  [[menu.main]]
+    name   = "首页"
+    url    = "/"
+    weight = 10
+  [[menu.main]]
+    name   = "工作"
+    url    = "/work/"
+    weight = 20
+  [[menu.main]]
+    name   = "生活"
+    url    = "/life/"
+    weight = 30
+  [[menu.main]]
+    name   = "技术"
+    url    = "/tech/"
+    weight = 40
+  [[menu.main]]
+    name   = "标签"
+    url    = "/tags/"
+    weight = 50
+  [[menu.main]]
+    name   = "搜索"
+    url    = "/search/"
+    weight = 60
+  [[menu.main]]
+    name   = "关于"
+    url    = "/about/"
+    weight = 70
+
+# ============================================================
+#  分类与标签
+# ============================================================
+[taxonomies]
+  tag = "tags"
+
+# ============================================================
+#  Markdown 渲染
+# ============================================================
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true            # 允许正文里写原生 HTML
+  [markup.highlight]
+    noClasses = false          # 使用 CSS 类，配合 chroma.css 做代码高亮
+    lineNos = false
+    tabWidth = 4
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 3
+    ordered = false

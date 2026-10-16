@@ -1,0 +1,15 @@
+{{ $p := . }}
+<a class="post-card" href="{{ $p.RelPermalink }}">
+  <h3 class="post-card-title">{{ $p.Title }}</h3>
+  <p class="post-card-summary">
+    {{ if $p.Description }}{{ $p.Description }}{{ else }}{{ $p.Summary | plainify | truncate 110 }}{{ end }}
+  </p>
+  <div class="post-card-meta">
+    {{ with $p.CurrentSection }}<span class="tag-plain">{{ .Title }}</span>{{ end }}
+    {{ range $p.GetTerms "tags" }}<span class="tag">{{ .LinkTitle }}</span>{{ end }}
+    <span class="spacer"></span>
+    <time datetime="{{ $p.Date.Format "2006-01-02" }}">{{ $p.Date.Format "2006-01-02" }}</time>
+    <span>·</span>
+    <span>{{ $p.ReadingTime }} 分钟</span>
+  </div>
+</a>
