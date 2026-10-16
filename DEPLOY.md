@@ -250,11 +250,30 @@ draft: false
 
 按顺序检查：
 
-1. **仓库名对不对**：必须是 `<用户名>.github.io`，一个字符都不能差
-2. **Settings → Pages → Source** 是否选了 `GitHub Actions`
-3. **Actions 是否成功**：去 Actions 标签页看，红色就是构建失败了
-4. **仓库是不是 Public**：免费账号的 Pages 不支持私有仓库
-5. 刚部署完等 2–3 分钟再刷新，或者用无痕窗口打开（避开缓存）
+1. **仓库名对不对**：必须是 `<用户名>.github.io`，一个字符都不能差。**多一个点、少一个点、大小写不对都不行**——GitHub 只认这个精确格式，名字不对就不会把它当用户主页站点，必然 404。
+   - 怎么验证：把仓库名复制出来逐字符比对。比如用户名 `zhangsan`，仓库名必须是 `zhangsan.github.io`，不能是 `zhangsan..github.io`、`zhangsan-github.io` 或 `zhangsan.github.io.bak`。
+   - **改法**：仓库页面 → **Settings** → 最上方 **Repository name** → 改成正确名字 → 点 **Rename**。GitHub 会为旧名字保留跳转。
+   - 改完记得同步本地远程地址：`git remote set-url origin https://github.com/<用户名>/<用户名>.github.io.git`
+2. **仓库是不是空的**：如果打开仓库首页看到的是 "Quick setup" 引导页，说明代码还没推上去，自然也没有 Actions 记录。
+3. **Settings → Pages → Source** 是否选了 `GitHub Actions`
+4. **Actions 是否成功**：去 Actions 标签页看，红色就是构建失败了
+5. **仓库是不是 Public**：免费账号的 Pages 不支持私有仓库
+6. 刚部署完等 2–3 分钟再刷新，或者用无痕窗口打开（避开缓存）
+
+### Actions 页面显示 "Get started with GitHub Actions"
+
+这不是报错，而是说明 **GitHub 在仓库里没找到任何 workflow 文件**。通常是：
+
+- 代码还没推送成功（仓库是空的）
+- `.github/workflows/deploy.yml` 没被提交上去
+
+验证方法：打开仓库首页，看看有没有 `.github` 目录。没有就是没推上去。
+
+### 推送时报 Repository not found
+
+两种可能：
+- 本地 `origin` 地址和实际仓库名不一致 → 用 `git remote -v` 看一下，再用 `git remote set-url origin <正确地址>` 修正
+- 仓库名拼错了 → 参考上面第 1 条改仓库名
 
 ### Actions 构建失败
 
