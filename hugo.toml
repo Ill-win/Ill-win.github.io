@@ -31,16 +31,16 @@ summaryLength = 120
 #  个人信息（改这里就能换掉全站的身份信息）
 # ============================================================
 [params]
-  author      = "Alex"
-  initials    = "AL"                                    # 头像占位字母
+  author      = "Ill-win"
+  initials    = "IL"                                    # 头像占位字母
   tagline     = "工作 · 生活 · 技术"                     # 首页副标题
   description = "记录工作上踩过的坑、生活里值得留下的瞬间，以及一些技术笔记。"
   since       = 2026
-  github      = "https://github.com/yourname"
-  email       = "you@example.com"
+  github      = "https://github.com/Ill-win"
+  email       = "584892239@qq.com"
 
   # 首页简介（支持 Markdown 语法之外的纯文本）
-  intro = "你好，我是 Alex。白天写代码，晚上写点别的。这里没有垂直领域，只有我真正想记下来的东西。"
+  intro = "你好，我是 Ill-win。白天写代码，晚上写点别的。这里没有垂直领域，只有我真正想记下来的东西。"
 
 # ============================================================
 #  导航菜单

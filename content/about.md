@@ -6,9 +6,9 @@ hideToc: true
 ---
 
 <div class="about-hero">
-  <div class="about-avatar">AL</div>
+  <div class="about-avatar">IL</div>
   <div>
-    <p class="about-name">Alex</p>
+    <p class="about-name">Ill-win</p>
     <p class="about-role">后端工程师 · 分布式系统爱好者</p>
   </div>
 </div>
@@ -31,11 +31,11 @@ hideToc: true
 
 ## 技术栈
 
-这个站点用 [Hugo](https://gohugo.io/) 构建，托管在 GitHub Pages 上，全程没有服务器。源码在 [GitHub](https://github.com/yourname) 上开源。
+这个站点用 [Hugo](https://gohugo.io/) 构建，托管在 GitHub Pages 上，全程没有服务器。源码在 [GitHub](https://github.com/Ill-win) 上开源。
 
 ## 联系我
 
-- GitHub：[yourname](https://github.com/yourname)
-- 邮箱：[you@example.com](mailto:you@example.com)
+- GitHub：[Ill-win](https://github.com/Ill-win)
+- 邮箱：[584892239@qq.com](mailto:584892239@qq.com)
 
 写得不严谨的地方，欢迎指正。
