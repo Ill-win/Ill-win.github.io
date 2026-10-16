@@ -244,6 +244,106 @@ draft: false
 
 ---
 
+## 网络连不上 GitHub 怎么办
+
+如果 `git push` 报 `Failed to connect to github.com:443` 或 `Could not connect to server`，说明你的网络到 GitHub 的 HTTPS 通道不通。国内很常见，不是你的配置问题。
+
+### 怎么判断
+
+```bash
+curl -m 10 -o /dev/null -w "github.com     %{http_code}\n" https://github.com
+curl -m 10 -o /dev/null -w "api.github.com %{http_code}\n" https://api.github.com
+```
+
+如果第一个返回 `000`、第二个返回 `200`，就是典型的「github.com 主站被阻断」。
+
+⚠️ **注意：API 通不代表主站通**，这是两套完全不同的 IP。
+
+### 解决方案：改用 SSH（推荐）
+
+实测经验：**HTTPS 通道被阻断时，SSH 通道通常仍然可用**（22 端口和 443 端口都通）。切换步骤：
+
+**1. 生成密钥**（若 `~/.ssh/id_ed25519` 已存在则跳过）
+
+```bash
+ssh-keygen -t ed25519 -C "你的邮箱" -f ~/.ssh/id_ed25519 -N ""
+```
+
+**2. 复制公钥**
+
+```bash
+cat ~/.ssh/id_ed25519.pub
+```
+
+复制输出的**一整行**（`ssh-ed25519 AAAA...` 开头）。
+
+**3. 添加到 GitHub**
+
+打开 https://github.com/settings/keys → **New SSH key** → Title 随便填（如 `my-laptop`）→ Key 粘贴 → **Add SSH key**
+
+**4. 切换远程地址**
+
+```bash
+git remote set-url origin git@github.com:<你的用户名>/<你的用户名>.github.io.git
+```
+
+**5. 测试连通**
+
+```bash
+ssh -T git@github.com
+```
+
+看到 `Hi xxx! You've successfully authenticated, but GitHub does not provide shell access.` 就成功了。
+
+**6. 推送**
+
+```bash
+git push -u origin main
+```
+
+### 如果 22 端口也不通
+
+有些网络会封 22 端口，改走 443：
+
+```bash
+ssh -T -p 443 git@ssh.github.com
+```
+
+通了就编辑 `C:\Users\<你的用户名>\.ssh\config`（没有就新建），写入：
+
+```
+Host github.com
+  HostName ssh.github.com
+  Port 443
+  User git
+```
+
+之后照常用 `git@github.com:...` 的地址即可，git 会自动走 443。
+
+### 备选方案
+
+**用代理**：如果有 Clash / v2rayN 等代理软件，让 git 走代理：
+
+```bash
+git config --global http.proxy http://127.0.0.1:7890    # 端口换成你代理的实际端口
+git config --global https.proxy http://127.0.0.1:7890
+```
+
+取消代理：
+
+```bash
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+```
+
+**换网络**：手机热点有时能通，可以应急推一次。
+
+**改 hosts**：把 github.com 指向可用 IP。但如果阻断发生在 TLS 层（TCP 能连、握手卡死），改 hosts 是无效的。
+
+> 好消息：GitHub Pages 的访问地址（`xxx.github.io`）和 github.com 主站是**不同的 IP 段**。主站不通时，你的博客页面往往仍然能正常访问。
+
+---
+
 ## 常见问题排查
 
 ### 访问页面是 404
