@@ -5,7 +5,7 @@
 
 # 如果你把仓库命名为 <用户名>.github.io，这里就是：
 #   https://<用户名>.github.io/
-baseURL = "https://yourname.github.io/"
+baseURL = "https://Ill-win.github.io/"
 title = "拾光集"
 locale = "zh-cn"
 defaultContentLanguage = "zh"
