@@ -99,6 +99,8 @@ draft: false
 
 **详细的从零操作手册见 [DEPLOY.md](./DEPLOY.md)**，包含注册账号、建仓库、推送认证（Token / SSH / gh CLI 三种方式）、开启 Pages、排错等完整步骤。
 
+**换电脑了？** 见 **[MIGRATE.md](./MIGRATE.md)** —— 所有内容都在 GitHub 上，新机器克隆下来就能继续用。
+
 速览版：
 
 1. 在 GitHub 新建仓库，名字必须是 `<你的用户名>.github.io`（Public）
